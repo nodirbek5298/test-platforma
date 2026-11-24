@@ -79,6 +79,7 @@ const $=s=>document.querySelector(s);
 let db=null,isOwner=false,test=null,results=[];
 const LS={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const gr=p=>p>=86?5:p>=71?4:p>=56?3:2;
 function tab(n){['st','rs','te'].forEach(k=>{$('#v-'+k).classList.toggle('hide',k!==n);$('#t-'+k).classList.toggle('on',k===n)});if(n==='rs')renderRes();}
 ['st','rs','te'].forEach(k=>$('#t-'+k).onclick=()=>tab(k));
 
@@ -162,7 +163,7 @@ async function finish(force){clearInterval(st.tid);
  const sc=v.qs.reduce((s,q,i)=>s+(st.ans[i]===q.a?1:0),0);
  let saved=true;try{await saveRes({name:st.name,variant:v.id,score:sc,total:n,ts:Date.now(),tid:test.id});LS.set('tp_done_'+test.id,'1');}catch(e){saved=false;}
  const p=Math.round(sc/n*100);
- let h='<div class="card"><div class="score">'+sc+' / '+n+'</div><p style="text-align:center;margin:0" class="mut">'+p+'% — '+(p>=86?'A’lo! 🌟':p>=71?'Yaxshi 👍':p>=56?'Qoniqarli':'Ko‘proq tayyorlaning')+'</p><div class="bar"><i style="width:'+p+'%"></i></div>'+(saved?'':'<div class="warn">Natija jadvalga saqlanmadi (internet yoki ruxsat muammosi).</div>')+'</div><div class="card"><h2>Javoblar tahlili</h2>';
+ let h='<div class="card"><div class="score">'+sc+' / '+n+'</div><div class="score" style="font-size:1.5rem;color:'+(gr(p)>=4?'var(--ok)':gr(p)==3?'var(--gold)':'var(--bad)')+'">Baho: '+gr(p)+' ('+p+'%)</div><p style="text-align:center;margin:0" class="mut">'+p+'% — '+(p>=86?'A’lo! 🌟':p>=71?'Yaxshi 👍':p>=56?'Qoniqarli':'Ko‘proq tayyorlaning')+'</p><div class="bar"><i style="width:'+p+'%"></i></div>'+(saved?'':'<div class="warn">Natija jadvalga saqlanmadi (internet yoki ruxsat muammosi).</div>')+'</div><div class="card"><h2>Javoblar tahlili</h2>';
  v.qs.forEach((q,i)=>{h+='<div class="q"><b>'+(i+1)+'. '+esc(q.q)+'</b>'+q.o.map((o,j)=>'<div class="opt '+(j===q.a?'ok':st.ans[i]===j?'no':'')+'">'+'ABCDEFGH'[j]+') '+esc(o)+(j===q.a?' ✓':st.ans[i]===j?' ✗':'')+'</div>').join('')+'</div>';});
  h+='<button class="btn" id="st-res">Natijalar jadvali</button></div>';$('#v-st').innerHTML=h;scrollTo(0,0);
  $('#st-res').onclick=()=>tab('rs');renderRes();
@@ -172,7 +173,7 @@ async function finish(force){clearInterval(st.tid);
 function renderRes(){
  const rs=results.filter(r=>!test||r.tid===test.id).sort((a,b)=>b.score-a.score||a.ts-b.ts);
  $('#rs-info').textContent=test?test.title+' — topshirganlar: '+rs.length:'Test yo‘q';
- $('#rs-tb').innerHTML='<tr><th>#</th><th>Ism</th><th>Variant</th><th>Ball</th><th>Foiz</th></tr>'+(rs.length?rs.map((r,i)=>'<tr><td>'+(i<3?['🥇','🥈','🥉'][i]:i+1)+'</td><td>'+esc(r.name)+'</td><td>'+r.variant+'</td><td>'+r.score+'/'+r.total+'</td><td>'+Math.round(r.score/r.total*100)+'%</td></tr>').join(''):'<tr><td colspan="5" class="mut">Hozircha natija yo‘q</td></tr>');
+ $('#rs-tb').innerHTML='<tr><th>#</th><th>Ism</th><th>Variant</th><th>Ball</th><th>Foiz</th><th>Baho</th></tr>'+(rs.length?rs.map((r,i)=>'<tr><td>'+(i<3?['🥇','🥈','🥉'][i]:i+1)+'</td><td>'+esc(r.name)+'</td><td>'+r.variant+'</td><td>'+r.score+'/'+r.total+'</td><td>'+Math.round(r.score/r.total*100)+'%</td><td><b>'+gr(Math.round(r.score/r.total*100))+'</b></td></tr>').join(''):'<tr><td colspan="6" class="mut">Hozircha natija yo‘q</td></tr>');
 }
 
 /* boot */
