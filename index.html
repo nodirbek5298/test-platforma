@@ -56,6 +56,7 @@ pre{white-space:pre-wrap;background:var(--bg);padding:10px;border-radius:10px;fo
 <label>Fayl yuklang (.txt yoki .docx)</label><input type="file" id="te-file" accept=".txt,.docx">
 <label>yoki savollarni shu yerga joylang</label><textarea id="te-text" placeholder="1. Savol matni?&#10;A) Birinchi javob&#10;*B) To‘g‘ri javob&#10;C) Uchinchi&#10;D) To‘rtinchi"></textarea>
 <label>Variantlar soni</label><input type="number" id="te-n" value="4" min="1" max="20">
+<label>Test vaqti (daqiqa; 0 = cheklovsiz)</label><input type="number" id="te-min" value="20" min="0" max="300">
 <button class="btn" id="te-go">Variantlarga ajratib e’lon qilish</button>
 <div id="te-msg" class="mut" style="margin-top:10px"></div></div>
 <div class="card"><h2>Fayl formati</h2><pre>1. Savol matni?
@@ -126,7 +127,7 @@ $('#te-file').onchange=async e=>{const f=e.target.files[0];if(f){try{$('#te-text
 $('#te-go').onclick=async()=>{
  const qs=parse($('#te-text').value);const n=Math.max(1,Math.min(20,+$('#te-n').value||1));
  if(!qs.length){$('#te-msg').textContent='Savollar topilmadi. Formatni tekshiring (har bir savolda to‘g‘ri javob belgilangan bo‘lsin).';return;}
- const t={title:$('#te-title').value.trim()||'Test',id:Date.now(),variants:makeVariants(qs,n)};
+ const t={title:$('#te-title').value.trim()||'Test',id:Date.now(),min:Math.max(0,Math.min(300,+$('#te-min').value||0)),variants:makeVariants(qs,n)};
  try{await saveTest(t);await clearRes();$('#te-msg').textContent='✅ '+qs.length+' ta savol, '+n+' ta variant tayyor. O‘quvchilar endi topshirishi mumkin.';renderStart();renderRes();}
  catch(e){$('#te-msg').textContent='Saqlab bo‘lmadi: '+(e.message||e.code||'xato');}
 };
@@ -138,7 +139,7 @@ function renderStart(){
  const el=$('#v-st');
  if(!test){el.innerHTML='<div class="card"><h2>Hozircha test yo‘q</h2><p class="mut">O‘qituvchi test e’lon qilgach shu yerda paydo bo‘ladi.</p></div>';return;}
  const done=LS.get('tp_done_'+test.id);
- el.innerHTML='<div class="card"><h2>'+esc(test.title)+'</h2><p class="mut">'+test.variants[0].qs.length+' ta savol • '+test.variants.length+' ta variant</p>'+
+ el.innerHTML='<div class="card"><h2>'+esc(test.title)+'</h2><p class="mut">'+test.variants[0].qs.length+' ta savol • '+test.variants.length+' ta variant'+(test.min?' • ⏱ '+test.min+' daqiqa':'')+'</p>'+
  '<label>Ism va familiyangiz</label><input id="st-name" placeholder="Masalan: Aliyev Vali" value="'+esc(LS.get('tp_name')||'')+'">'+
  (done?'<p class="mut">Siz bu testni topshirib bo‘lgansiz.</p>':'')+
  '<button class="btn" id="st-go">Testni boshlash</button></div>';
@@ -146,17 +147,18 @@ function renderStart(){
   LS.set('tp_name',nm);const v=test.variants[Math.floor(Math.random()*test.variants.length)];st={name:nm,v,ans:[]};renderQ();};
 }
 function renderQ(){
- const v=st.v;let h='<div class="card"><h2>'+esc(test.title)+' — '+v.id+'-variant</h2><p class="mut">'+esc(st.name)+'</p><div class="bar"><i id="pg" style="width:0"></i></div>';
+ const v=st.v;let h='<div class="card"><h2>'+esc(test.title)+' — '+v.id+'-variant</h2><p class="mut">'+esc(st.name)+'</p>'+(test.min?'<div id="tm" class="score" style="font-size:1.6rem;position:sticky;top:env(safe-area-inset-top,0px);background:var(--card);padding:6px 0;z-index:5"></div>':'')+'<div class="bar"><i id="pg" style="width:0"></i></div>';
  v.qs.forEach((q,i)=>{h+='<div class="q"><b>'+(i+1)+'. '+esc(q.q)+'</b>'+q.o.map((o,j)=>'<button class="opt" data-i="'+i+'" data-j="'+j+'"><b style="display:inline;margin-right:6px">'+'ABCDEFGH'[j]+')</b>'+esc(o)+'</button>').join('')+'</div>';});
  h+='<button class="btn" id="st-fin">Yakunlash</button></div>';$('#v-st').innerHTML=h;scrollTo(0,0);
  document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,j=+b.dataset.j;st.ans[i]=j;
   document.querySelectorAll('.opt[data-i="'+i+'"]').forEach(x=>x.classList.toggle('sel',+x.dataset.j===j));
   $('#pg').style.width=(st.ans.filter(x=>x!==undefined).length/v.qs.length*100)+'%';});
- $('#st-fin').onclick=finish;
+ $('#st-fin').onclick=()=>finish();startTimer();
 }
-async function finish(){
+function startTimer(){if(!test.min)return;const end=Date.now()+test.min*60000;const tick=()=>{const s=Math.max(0,Math.round((end-Date.now())/1000));const el=$('#tm');if(el){el.textContent='⏱ '+String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');el.style.color=s<60?'var(--bad)':'';}if(s<=0){clearInterval(st.tid);alert('Vaqt tugadi! Natijangiz yuborilmoqda.');finish(true);}};tick();st.tid=setInterval(tick,1000);}
+async function finish(force){clearInterval(st.tid);
  const v=st.v,n=v.qs.length,un=n-st.ans.filter(x=>x!==undefined).length;
- if(un&&!confirm(un+' ta savolga javob berilmadi. Baribir yakunlaysizmi?'))return;
+ if(un&&!force&&!confirm(un+' ta savolga javob berilmadi. Baribir yakunlaysizmi?'))return;
  const sc=v.qs.reduce((s,q,i)=>s+(st.ans[i]===q.a?1:0),0);
  let saved=true;try{await saveRes({name:st.name,variant:v.id,score:sc,total:n,ts:Date.now(),tid:test.id});LS.set('tp_done_'+test.id,'1');}catch(e){saved=false;}
  const p=Math.round(sc/n*100);
