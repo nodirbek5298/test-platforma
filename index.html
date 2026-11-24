@@ -43,7 +43,7 @@ pre{white-space:pre-wrap;background:var(--bg);padding:10px;border-radius:10px;fo
 <body>
 <header><div class="wrap"><h1>📝 Onlayn Test Platformasi</h1><p>Bilimingizni sinab ko‘ring — natijangiz darhol ko‘rinadi</p></div></header>
 <div class="wrap">
-<nav><button id="t-st" class="on">O‘quvchi</button><button id="t-rs">Natijalar</button><button id="t-te">O‘qituvchi</button></nav>
+<nav><button id="t-st" class="on">O‘quvchi</button><button id="t-rs" class="hide">Natijalar</button><button id="t-te">O‘qituvchi</button></nav>
 
 <section id="v-st"></section>
 
@@ -76,12 +76,13 @@ Javob: C</pre><p class="mut">To‘g‘ri javob yo‘q yoki «Javob: X» qatori o
 <script>
 (function(){
 const $=s=>document.querySelector(s);
-let db=null,isOwner=false,test=null,results=[];
+let db=null,isOwner=false,isT=false,test=null,results=[];
 const LS={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const gr=p=>p>=86?5:p>=71?4:p>=56?3:2;
+function unlock(){if(isT)return true;if(db)return false;let p=LS.get('tp_pin');if(!p){p=prompt('O‘qituvchi uchun yangi PIN-kod yarating:');if(!p)return false;LS.set('tp_pin',p);}else{const x=prompt('O‘qituvchi PIN-kodi:');if(x!==p){alert('PIN noto‘g‘ri');return false;}}isT=true;$('#t-rs').classList.remove('hide');return true;}
 function tab(n){['st','rs','te'].forEach(k=>{$('#v-'+k).classList.toggle('hide',k!==n);$('#t-'+k).classList.toggle('on',k===n)});if(n==='rs')renderRes();}
-['st','rs','te'].forEach(k=>$('#t-'+k).onclick=()=>tab(k));
+['st','rs','te'].forEach(k=>$('#t-'+k).onclick=()=>{if(k==='te'&&!unlock())return;tab(k)});
 
 /* storage */
 async function loadAll(){
@@ -165,8 +166,8 @@ async function finish(force){clearInterval(st.tid);
  const p=Math.round(sc/n*100);
  let h='<div class="card"><div class="score">'+sc+' / '+n+'</div><div class="score" style="font-size:1.5rem;color:'+(gr(p)>=4?'var(--ok)':gr(p)==3?'var(--gold)':'var(--bad)')+'">Baho: '+gr(p)+' ('+p+'%)</div><p style="text-align:center;margin:0" class="mut">'+p+'% — '+(p>=86?'A’lo! 🌟':p>=71?'Yaxshi 👍':p>=56?'Qoniqarli':'Ko‘proq tayyorlaning')+'</p><div class="bar"><i style="width:'+p+'%"></i></div>'+(saved?'':'<div class="warn">Natija jadvalga saqlanmadi (internet yoki ruxsat muammosi).</div>')+'</div><div class="card"><h2>Javoblar tahlili</h2>';
  v.qs.forEach((q,i)=>{h+='<div class="q"><b>'+(i+1)+'. '+esc(q.q)+'</b>'+q.o.map((o,j)=>'<div class="opt '+(j===q.a?'ok':st.ans[i]===j?'no':'')+'">'+'ABCDEFGH'[j]+') '+esc(o)+(j===q.a?' ✓':st.ans[i]===j?' ✗':'')+'</div>').join('')+'</div>';});
- h+='<button class="btn" id="st-res">Natijalar jadvali</button></div>';$('#v-st').innerHTML=h;scrollTo(0,0);
- $('#st-res').onclick=()=>tab('rs');renderRes();
+ h+='</div>';$('#v-st').innerHTML=h;scrollTo(0,0);
+ renderRes();
 }
 
 /* results */
@@ -183,7 +184,7 @@ renderStart();renderRes();teacherSetup();
   if(window.claude&&claude.use){const d=await claude.use('db');if(d){db=d;try{const u=await claude.use('user');isOwner=u?await u.isOwner():false;}catch(e){}}}
  }catch(e){}
  teacherSetup();
- if(db&&!isOwner){$('#t-te').classList.add('hide');}
+ if(db){isT=isOwner;if(!isOwner)$('#t-te').classList.add('hide');else $('#t-rs').classList.remove('hide');}
  await loadAll();
 })();
 })();
