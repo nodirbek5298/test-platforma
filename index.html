@@ -55,6 +55,8 @@ pre{white-space:pre-wrap;background:var(--bg2);padding:10px;border-radius:10px;f
 .c{text-align:center}
 footer{text-align:center;color:var(--mut);font-size:.82rem;padding:10px 0 28px}
 .cf{position:fixed;top:-30px;font-size:1.5rem;animation:fall linear forwards;z-index:99;pointer-events:none}@keyframes fall{to{transform:translateY(112vh) rotate(360deg)}}
+select{padding:11px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg2);color:var(--ink);font:inherit}
+.ar{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:.9rem}
 </style>
 </head>
 <body>
@@ -100,6 +102,14 @@ async function readFile(f){if(/\.docx$/i.test(f.name)){const r=await mammoth.ext
 /* ---- mavzu va konfeti ---- */
 (function(){const t=LS.g('tp_theme');if(t)document.documentElement.dataset.theme=t;$('#th').onclick=()=>{const d=document.documentElement,n=(d.dataset.theme||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'))==='dark'?'light':'dark';d.dataset.theme=n;LS.s('tp_theme',n)}})();
 function confetti(){const e=['🎉','✨','🌟','🎊'];for(let i=0;i<30;i++){const x=document.createElement('span');x.className='cf';x.textContent=e[i%4];x.style.left=Math.random()*100+'vw';x.style.animationDuration=(2+Math.random()*2.5)+'s';document.body.appendChild(x);setTimeout(()=>x.remove(),5000)}}
+/* ---- arxiv, CSV, aralashtirish ---- */
+function arch(c,t){let a=[];try{a=JSON.parse(LS.g('tp_rooms')||'[]')}catch(e){}a.unshift({c,t,ts:Date.now()});LS.s('tp_rooms',JSON.stringify(a.slice(0,30)))}
+function archHtml(){let a=[];try{a=JSON.parse(LS.g('tp_rooms')||'[]')}catch(e){}
+ return a.length?a.map(x=>'<div class="ar"><button class="btn sm alt2" data-ar="'+esc(x.c)+'">Ochish</button><b>'+esc(x.t)+'</b><span class="mut">'+esc(x.c)+' • '+new Date(x.ts).toLocaleDateString()+'</span></div>').join(''):'<p class="mut">Hozircha testlar yo‘q.</p>'}
+function csv(ps,c){const rows=[['Ism','Variant','Holat','Ball','Jami','Foiz','Baho','Chiqishlar']].concat(ps.map(p=>[p.name,p.variant||'',p.status,p.score==null?'':p.score,p.total==null?'':p.total,p.p==null?'':p.p,p.grade==null?'':p.grade,p.leaves||0]));
+ const t='\ufeff'+rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\n');
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/csv;charset=utf-8'}));a.download='natijalar_'+c+'.csv';document.body.appendChild(a);a.click();a.remove()}
+function pers(v){return{id:v.id,qs:shuf(v.qs).map(q=>{const ix=shuf(q.o.map((_,i)=>i));return{q:q.q,o:ix.map(i=>q.o[i]),a:ix.indexOf(q.a)}})}}
 /* ---- bosh sahifa ---- */
 function home(){clr();
  app.innerHTML='<div class="card c"><h2>Xush kelibsiz!</h2><p class="mut">Rolni tanlang</p><button class="btn big" id="b1">👨‍🎓 Men o‘quvchiman</button>'+
@@ -122,15 +132,16 @@ function tHome(){clr();const last=LS.g('tp_last');
  '<label class="chk"><input type="checkbox" id="ap"> Har bir o‘quvchiga o‘qituvchi qo‘lda ruxsat bersin</label>'+
  '<button class="btn" id="go">Xona yaratish (kod va QR olish)</button><div id="ms" class="mut" style="margin-top:8px"></div>'+
  (last?'<button class="btn alt2" id="lr">Oxirgi xonaga qaytish ('+esc(last)+')</button>':'')+'</div>'+
+ '<div class="card"><h2>Test arxivi</h2>'+archHtml()+'</div>'+
  '<div class="card"><h2>Fayl formati</h2><pre>1. Savol matni?\nA) Variant\n*B) To‘g‘ri javob (yulduzcha bilan)\nC) Variant\nD) Variant\n\n2. Keyingi savol?\nA) ...\nB) ...\nJavob: C</pre></div><button class="btn alt2" id="hm">← Bosh sahifa</button>';
- $('#hm').onclick=home;if(last)$('#lr').onclick=()=>tRoom(last);
+ $('#hm').onclick=home;if(last)$('#lr').onclick=()=>tRoom(last);document.querySelectorAll('[data-ar]').forEach(b=>b.onclick=()=>tRoom(b.dataset.ar));
  $('#fi').onchange=async e=>{const f=e.target.files[0];if(f){try{$('#tx').value=await readFile(f);$('#ms').textContent='Fayl o‘qildi: '+f.name}catch(x){$('#ms').textContent='Faylni o‘qib bo‘lmadi'}}};
  $('#go').onclick=async()=>{const qs=parse($('#tx').value),n=Math.max(1,Math.min(20,+$('#nv').value||1)),m=$('#ms');
   if(!qs.length){m.textContent='Savollar topilmadi. Har bir savolda to‘g‘ri javob belgilangan bo‘lsin.';return}
   const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c='';for(let i=0;i<6;i++)c+=A[Math.floor(Math.random()*A.length)];
   try{await P('tests/'+c,{variants:makeVariants(qs,n)});
    await P('rooms/'+c,{title:$('#ti').value.trim()||'Test',min:Math.max(0,Math.min(300,+$('#mn').value||0)),status:'lobby',approve:$('#ap').checked,allow:{},block:{},n:qs.length});
-   LS.s('tp_last',c);tRoom(c)}catch(e){m.textContent='Saqlab bo‘lmadi: '+(e.message||'xato')}}}
+   LS.s('tp_last',c);arch(c,$('#ti').value.trim()||'Test');tRoom(c)}catch(e){m.textContent='Saqlab bo‘lmadi: '+(e.message||'xato')}}}
 
 /* ---- o'qituvchi: xona (kod, QR, jonli ishtirokchilar) ---- */
 async function tRoom(c){clr();let r;try{r=await G('rooms/'+c)}catch(e){}
@@ -139,7 +150,7 @@ async function tRoom(c){clr();let r;try{r=await G('rooms/'+c)}catch(e){}
  app.innerHTML='<div class="card c"><div class="mut">Test kodi</div><div class="code">'+c+'</div><div class="qr" id="qr"></div>'+
  '<p class="mut" style="word-break:break-all">'+esc(link)+'</p><b>'+esc(r.title)+'</b> <span class="mut">• '+r.n+' ta savol • '+(r.min?r.min+' daqiqa':'vaqt cheklanmagan')+(r.approve?' • ruxsat bilan':'')+'</span>'+
  '<div><button class="btn" id="st1">▶ Testni boshlash</button><button class="btn alt" id="st2">■ Yakunlash</button><button class="btn alt2" id="st3">✔ Hammaga ruxsat</button></div><div id="ss" class="mut" style="margin-top:8px"></div></div>'+
- '<div class="stats" id="sx"></div><div class="card"><h2>👥 Ishtirokchilar <span id="cn" class="mut"></span></h2><div class="tw"><table id="pt"></table></div></div>'+
+ '<div class="stats" id="sx"></div><div class="card"><h2>Savollar tahlili</h2><div id="qa" class="mut"></div></div><div class="card"><h2>👥 Ishtirokchilar <span id="cn" class="mut"></span></h2><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><input id="sq" placeholder="Ism bo‘yicha qidirish" style="flex:1;min-width:140px"><select id="so"><option value="j">Kirish tartibi</option><option value="b">Ball bo‘yicha</option></select><button class="btn sm" id="dl" style="margin:0">⬇ Excel (CSV)</button></div><div class="tw"><table id="pt"></table></div></div>'+
  '<button class="btn alt2" id="nw">+ Yangi test</button>';
  try{new QRCode($('#qr'),{text:link,width:190,height:190})}catch(e){}
  const lab={lobby:'Kutish xonasi: o‘quvchilar kirmoqda',running:'Test davom etmoqda',closed:'Test yakunlangan'};
@@ -148,14 +159,14 @@ async function tRoom(c){clr();let r;try{r=await G('rooms/'+c)}catch(e){}
  $('#st1').onclick=async()=>{r.status='running';await save()};
  $('#st2').onclick=async()=>{if(confirm('Testni yakunlaysizmi?')){r.status='closed';await save()}};
  $('#st3').onclick=async()=>{(await listP(c)).forEach(p=>{if(!r.block[p.id])r.allow[p.id]=1});r.approve=false;await save();poll()};
- $('#nw').onclick=tHome;
- const poll=async()=>{try{const ps=(await listP(c)).sort((a,b)=>a.joined-b.joined);
-  const done=ps.filter(p=>p.status==='done').length;$('#cn').textContent='— '+ps.length+' ta';const dn=ps.filter(p=>p.status==='done');$('#sx').innerHTML='<div class="stat"><b>'+ps.length+'</b>ishtirokchi</div><div class="stat"><b>'+done+'</b>topshirgan</div><div class="stat"><b>'+(dn.length?Math.round(dn.reduce((a,p)=>a+p.p,0)/dn.length)+'%':'—')+'</b>o‘rtacha</div><div class="stat"><b>'+(dn.length?Math.max.apply(null,dn.map(p=>p.p))+'%':'—')+'</b>eng yuqori</div>';
-  $('#pt').innerHTML='<tr><th>#</th><th>Ism</th><th>Holat</th><th>Ball</th><th>Foiz</th><th>Baho</th><th>Ruxsat</th></tr>'+(ps.length?ps.map((p,i)=>{
+ let cur=[];$('#nw').onclick=tHome;$('#dl').onclick=()=>csv(cur,c);
+ const poll=async()=>{try{const ps=(await listP(c)).sort((a,b)=>a.joined-b.joined);cur=ps;const fq=($('#sq').value||'').toLowerCase();let vs=ps.filter(p=>p.name.toLowerCase().includes(fq));if($('#so').value==='b')vs=vs.slice().sort((a,b)=>(b.p==null?-1:b.p)-(a.p==null?-1:a.p));
+  const done=ps.filter(p=>p.status==='done').length;$('#cn').textContent='— '+ps.length+' ta';const dn=ps.filter(p=>p.status==='done');$('#sx').innerHTML='<div class="stat"><b>'+ps.length+'</b>ishtirokchi</div><div class="stat"><b>'+done+'</b>topshirgan</div><div class="stat"><b>'+(dn.length?Math.round(dn.reduce((a,p)=>a+p.p,0)/dn.length)+'%':'—')+'</b>o‘rtacha</div><div class="stat"><b>'+(dn.length?Math.max.apply(null,dn.map(p=>p.p))+'%':'—')+'</b>eng yuqori</div>';const wc={};dn.forEach(p=>(p.wr||[]).forEach(t=>{wc[t]=(wc[t]||0)+1}));const top=Object.entries(wc).sort((a,b)=>b[1]-a[1]).slice(0,5);$('#qa').innerHTML=dn.length?(top.length?'<p class="mut">Eng ko‘p xato qilingan savollar:</p>'+top.map(x=>'<div style="padding:6px 0;border-bottom:1px solid var(--line);color:var(--ink)"><b style="color:var(--bad)">'+x[1]+'/'+dn.length+'</b> '+esc(x[0])+'</div>').join(''):'Hamma savolga to‘g‘ri javob berilgan 🎉'):'Ma’lumot topshirganlardan keyin chiqadi.';
+  $('#pt').innerHTML='<tr><th>#</th><th>Ism</th><th>Holat</th><th>Ball</th><th>Foiz</th><th>Baho</th><th>Chiqish</th><th>Ruxsat</th></tr>'+(vs.length?vs.map((p,i)=>{
    const bl=r.block[p.id],al=!r.approve||r.allow[p.id];
    const h=bl?'<span class="pill bad">Chetlatilgan</span>':p.status==='done'?'<span class="pill ok">Topshirdi</span>':p.status==='working'?'<span class="pill b">Ishlayapti</span>':al?'<span class="pill w">Kutmoqda</span>':'<span class="pill bad">Ruxsat kutmoqda</span>';
-   return'<tr><td>'+(i+1)+'</td><td>'+esc(p.name)+'</td><td>'+h+'</td><td>'+(p.status==='done'?p.score+'/'+p.total:'—')+'</td><td>'+(p.status==='done'?p.p+'%':'—')+'</td><td><b>'+(p.status==='done'?p.grade:'—')+'</b></td><td>'+
-   (bl?'<button class="btn sm ok" data-a="un" data-i="'+p.id+'">Qaytarish</button>':(al?'':'<button class="btn sm ok" data-a="al" data-i="'+p.id+'">Ruxsat</button>')+(p.status==='done'?'':'<button class="btn sm bad" data-a="bl" data-i="'+p.id+'">Blok</button>'))+'</td></tr>'}).join(''):'<tr><td colspan="7" class="mut">Hozircha hech kim kirmadi. Kodni yoki QR’ni o‘quvchilarga bering.</td></tr>');
+   return'<tr><td>'+(i+1)+'</td><td>'+esc(p.name)+'</td><td>'+h+'</td><td>'+(p.status==='done'?p.score+'/'+p.total:'—')+'</td><td>'+(p.status==='done'?p.p+'%':'—')+'</td><td><b>'+(p.status==='done'?p.grade:'—')+'</b></td><td>'+(p.leaves?'<span class="pill bad">⚠ '+p.leaves+'</span>':'—')+'</td><td>'+
+   (bl?'<button class="btn sm ok" data-a="un" data-i="'+p.id+'">Qaytarish</button>':(al?'':'<button class="btn sm ok" data-a="al" data-i="'+p.id+'">Ruxsat</button>')+(p.status==='done'?'':'<button class="btn sm bad" data-a="bl" data-i="'+p.id+'">Blok</button>'))+'</td></tr>'}).join(''):'<tr><td colspan="8" class="mut">Hozircha hech kim kirmadi. Kodni yoki QR’ni o‘quvchilarga bering.</td></tr>');
   document.querySelectorAll('#pt button').forEach(b=>b.onclick=async()=>{const i=b.dataset.i,a=b.dataset.a;
    if(a==='al')r.allow[i]=1;if(a==='bl'){r.block[i]=1;delete r.allow[i]}if(a==='un')delete r.block[i];await save();poll()})}catch(e){}};
  poll();T=setInterval(poll,3000)}
@@ -180,7 +191,7 @@ function sWait(){clr();app.innerHTML='<div class="card c"><h2>Siz ro‘yxatdasiz
  chk();T=setInterval(chk,2500)}
 async function startTest(r){let t;try{t=await G('tests/'+st.code)}catch(e){}
  if(!t)return msg('Xato','Test yuklanmadi. Qayta urinib ko‘ring.');
- st.room=r;st.v=t.variants[Math.floor(Math.random()*t.variants.length)];st.ans=[];
+ st.room=r;st.v=pers(t.variants[Math.floor(Math.random()*t.variants.length)]);st.leaves=0;st.done=0;st.ans=[];
  await putP(st.code,{id:st.id,name:st.name,status:'working',joined:st.joined,variant:st.v.id});
  const v=st.v;let h='<div class="card"><h2>'+esc(r.title)+' — '+v.id+'-variant</h2><p class="mut">'+esc(st.name)+'</p>'+(r.min?'<div id="tm" class="score" style="font-size:1.6rem;position:sticky;top:env(safe-area-inset-top,0px);background:var(--card);padding:6px 0;z-index:5"></div>':'')+'<div class="bar"><i id="pg" style="width:0"></i></div>';
  v.qs.forEach((q,i)=>{h+='<div class="q"><b>'+(i+1)+'. '+esc(q.q)+'</b>'+q.o.map((o,j)=>'<button class="opt" data-i="'+i+'" data-j="'+j+'"><b style="display:inline;margin-right:6px">'+'ABCDEFGH'[j]+')</b>'+esc(o)+'</button>').join('')+'</div>'});
@@ -188,7 +199,7 @@ async function startTest(r){let t;try{t=await G('tests/'+st.code)}catch(e){}
  document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,j=+b.dataset.j;st.ans[i]=j;
   document.querySelectorAll('.opt[data-i="'+i+'"]').forEach(x=>x.classList.toggle('sel',+x.dataset.j===j));
   $('#pg').style.width=(st.ans.filter(x=>x!==undefined).length/v.qs.length*100)+'%'});
- $('#fn').onclick=()=>finish();
+ $('#fn').onclick=()=>finish();document.onvisibilitychange=()=>{if(document.hidden&&st.v&&!st.done){st.leaves=(st.leaves||0)+1;putP(st.code,{id:st.id,name:st.name,status:'working',joined:st.joined,variant:st.v.id,leaves:st.leaves}).catch(()=>{})}};
  const end=Date.now()+(r.min||0)*60000;let k=0;
  const tick=async()=>{if(r.min){const s=Math.max(0,Math.round((end-Date.now())/1000)),el=$('#tm');
    if(el){el.textContent='⏱ '+String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');el.style.color=s<60?'var(--bad)':''}
@@ -197,8 +208,8 @@ async function startTest(r){let t;try{t=await G('tests/'+st.code)}catch(e){}
  tick();T=setInterval(tick,1000)}
 async function finish(force){const v=st.v,n=v.qs.length,un=n-st.ans.filter(x=>x!==undefined).length;
  if(un&&!force&&!confirm(un+' ta savolga javob berilmadi. Baribir yakunlaysizmi?'))return;clr();
- const sc=v.qs.reduce((s,q,i)=>s+(st.ans[i]===q.a?1:0),0),p=Math.round(sc/n*100),g=gr(p);let saved=true;
- try{await putP(st.code,{id:st.id,name:st.name,status:'done',joined:st.joined,variant:v.id,score:sc,total:n,p,grade:g});LS.s('done_'+st.code,'1')}catch(e){saved=false}
+ st.done=1;const wr=v.qs.filter((q,i)=>st.ans[i]!==q.a).map(q=>q.q.slice(0,90));const sc=v.qs.reduce((s,q,i)=>s+(st.ans[i]===q.a?1:0),0),p=Math.round(sc/n*100),g=gr(p);let saved=true;
+ try{await putP(st.code,{id:st.id,name:st.name,status:'done',joined:st.joined,variant:v.id,score:sc,total:n,p,grade:g,wr,leaves:st.leaves||0});LS.s('done_'+st.code,'1')}catch(e){saved=false}
  let h='<div class="card c"><div class="ring" style="--p:'+p+'"><div><b style="font-size:2.8rem;line-height:1">'+g+'</b><span class="mut">baho</span></div></div><div class="score" style="font-size:1.6rem;margin-top:8px">'+sc+' / '+n+' • '+p+'%</div><p class="mut">'+(g==5?'A’lo! Tabriklaymiz! 🎉':g==4?'Yaxshi natija 👍':g==3?'Qoniqarli':'Ko‘proq tayyorlaning')+'</p>'+(saved?'':'<div class="warn">Natija o‘qituvchiga yuborilmadi (internet muammosi).</div>')+'</div><div class="card"><h2>Javoblar tahlili</h2>';
  v.qs.forEach((q,i)=>{h+='<div class="q"><b>'+(i+1)+'. '+esc(q.q)+'</b>'+q.o.map((o,j)=>'<div class="opt '+(j===q.a?'ok':st.ans[i]===j?'no':'')+'">'+'ABCDEFGH'[j]+') '+esc(o)+(j===q.a?' ✓':st.ans[i]===j?' ✗':'')+'</div>').join('')+'</div>'});
  app.innerHTML=h+'</div>';scrollTo(0,0);if(g==5)confetti()}
