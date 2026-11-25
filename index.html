@@ -54,8 +54,8 @@ const $=s=>document.querySelector(s),app=$('#app');
 const LS={g(k){try{return localStorage.getItem(k)}catch(e){return null}},s(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const gr=p=>p>=86?5:p>=71?4:p>=56?3:2;
-/* Firebase Realtime Database manzili (GitHub Pages uchun). Masalan: https://loyiha-default-rtdb.firebaseio.com */
-const FB_URL='';
+/* Firebase Realtime Database manzili (GitHub Pages uchun). */
+const FB_URL='https://milli-test-660c8-default-rtdb.firebaseio.com';
 let mode='local',db=null,isT=false,T=null,st={};
 const clr=()=>clearInterval(T);
 
