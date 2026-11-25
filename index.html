@@ -5,188 +5,193 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Onlayn Test Platformasi</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-:root{--bg:#f4f7fb;--card:#fff;--ink:#14213d;--mut:#64708a;--pri:#0a7ea4;--pri2:#0b3d91;--ok:#16a34a;--bad:#dc2626;--line:#dde4ef;--gold:#e8a317;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1424;--card:#16203a;--ink:#e8eefc;--mut:#92a0c0;--pri:#38bdf8;--pri2:#6d8dff;--line:#27345a}}
+:root{--bg:#eaf3f8;--card:#fff;--ink:#14213d;--mut:#64708a;--pri:#0a7ea4;--pri2:#0b3d91;--ok:#16a34a;--bad:#dc2626;--line:#d6e2ee;--gold:#e8a317;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1a33;--card:#142447;--ink:#e8eefc;--mut:#9aa8c8;--pri:#38bdf8;--pri2:#6d8dff;--line:#2a3a64}}
 *{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
-header{background:linear-gradient(135deg,var(--pri2),var(--pri));color:#fff;padding:22px 16px 26px;position:relative}
-header:after{content:"";position:absolute;left:0;right:0;bottom:0;height:8px;background:repeating-linear-gradient(90deg,var(--gold) 0 14px,#fff 14px 20px,#16a34a 20px 34px,#fff 34px 40px)}
-.wrap{max-width:820px;margin:0 auto;padding:0 14px}
-header h1{margin:0;font-size:1.5rem}header p{margin:4px 0 0;opacity:.85;font-size:.92rem}
-nav{display:flex;gap:6px;margin:16px 0}
-nav button{flex:1;padding:11px 8px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;font-weight:600;cursor:pointer;font-size:.95rem}
-nav button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 2px 10px rgba(10,40,90,.05)}
+body{margin:0;color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5;background-color:var(--bg);
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='88' viewBox='0 0 88 88'%3E%3Cg fill='none' stroke='%230a7ea4' stroke-width='1.3' opacity='.28'%3E%3Crect x='22' y='22' width='44' height='44'/%3E%3Crect x='22' y='22' width='44' height='44' transform='rotate(45 44 44)'/%3E%3Ccircle cx='44' cy='44' r='10'/%3E%3Cpath d='M0 0l22 22M88 0L66 22M0 88l22-22M88 88L66 66'/%3E%3C/g%3E%3Cg fill='%23e8a317' opacity='.35'%3E%3Ccircle cx='0' cy='0' r='3'/%3E%3Ccircle cx='88' cy='0' r='3'/%3E%3Ccircle cx='0' cy='88' r='3'/%3E%3Ccircle cx='88' cy='88' r='3'/%3E%3Ccircle cx='44' cy='44' r='3'/%3E%3C/g%3E%3C/svg%3E")}
+header{background:linear-gradient(135deg,var(--pri2),var(--pri));color:#fff;padding:22px 16px 28px;position:relative}
+header:after{content:"";position:absolute;left:0;right:0;bottom:0;height:10px;background:repeating-linear-gradient(90deg,var(--gold) 0 16px,#fff 16px 22px,#16a34a 22px 38px,#fff 38px 44px,#dc2626 44px 54px,#fff 54px 60px)}
+.wrap{max-width:860px;margin:0 auto;padding:0 14px}
+header h1{margin:0;font-size:1.5rem}header p{margin:4px 0 0;opacity:.88;font-size:.92rem}
+#app{padding:16px 0 30px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 3px 14px rgba(10,40,90,.08)}
 h2{margin:0 0 10px;font-size:1.2rem}
 label{display:block;font-size:.85rem;color:var(--mut);margin:10px 0 4px}
 input,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
-textarea{min-height:130px;font-family:ui-monospace,Menlo,monospace;font-size:.85rem}
-.btn{background:var(--pri);color:#fff;border:0;padding:12px 18px;border-radius:12px;font-weight:700;cursor:pointer;font-size:1rem;margin-top:12px}
-.btn.alt{background:transparent;color:var(--bad);border:1px solid var(--bad)}
-.btn:disabled{opacity:.5}
+textarea{min-height:120px;font-family:ui-monospace,Menlo,monospace;font-size:.85rem}
+.chk{display:flex;gap:8px;align-items:center;margin-top:10px;color:var(--ink);font-size:.92rem}.chk input{width:auto}
+.btn{background:var(--pri);color:#fff;border:0;padding:12px 18px;border-radius:12px;font-weight:700;cursor:pointer;font-size:1rem;margin:12px 6px 0 0}
+.btn.big{display:block;width:100%;padding:18px;font-size:1.15rem;margin:10px 0}
+.btn.alt{background:transparent;color:var(--bad);border:1.5px solid var(--bad)}
+.btn.alt2{background:var(--pri2);color:#fff}.btn.sm{padding:6px 10px;font-size:.8rem;margin:0 4px 0 0;border-radius:8px}
+.btn.ok{background:var(--ok)}.btn.bad{background:var(--bad)}
 .mut{color:var(--mut);font-size:.88rem}
-.q{padding:14px 0;border-top:1px solid var(--line)}.q:first-of-type{border-top:0}
-.q b{display:block;margin-bottom:8px}
+.code{font-size:3rem;font-weight:800;letter-spacing:8px;color:var(--pri);font-family:ui-monospace,Menlo,monospace}
+.qr{display:inline-block;background:#fff;padding:10px;border-radius:12px;margin:8px 0}
+.q{padding:14px 0;border-top:1px solid var(--line)}.q:first-of-type{border-top:0}.q>b{display:block;margin-bottom:8px}
 .opt{display:block;width:100%;text-align:left;padding:10px 12px;margin:6px 0;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);cursor:pointer;font:inherit}
 .opt.sel{border-color:var(--pri);background:color-mix(in srgb,var(--pri) 14%,transparent)}
 .opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,transparent)}
 .opt.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 16%,transparent)}
 .score{font-size:2.6rem;font-weight:800;color:var(--pri);text-align:center}
 .bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;background:var(--pri)}
-.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.93rem}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.92rem}
 th,td{padding:9px 8px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--mut);font-weight:600}
-.hide{display:none}.warn{background:color-mix(in srgb,var(--gold) 18%,transparent);border:1px solid var(--gold);padding:10px 12px;border-radius:10px;font-size:.88rem;margin-bottom:12px}
+.warn{background:color-mix(in srgb,var(--gold) 18%,transparent);border:1px solid var(--gold);padding:10px 12px;border-radius:10px;font-size:.88rem;margin-bottom:12px}
 pre{white-space:pre-wrap;background:var(--bg);padding:10px;border-radius:10px;font-size:.82rem;border:1px solid var(--line)}
+.c{text-align:center}
 </style>
 </head>
 <body>
-<header><div class="wrap"><h1>📝 Onlayn Test Platformasi</h1><p>Bilimingizni sinab ko‘ring — natijangiz darhol ko‘rinadi</p></div></header>
-<div class="wrap">
-<nav><button id="t-st" class="on">O‘quvchi</button><button id="t-rs" class="hide">Natijalar</button><button id="t-te">O‘qituvchi</button></nav>
-
-<section id="v-st"></section>
-
-<section id="v-rs" class="hide"><div class="card"><h2>🏆 Natijalar jadvali</h2><div id="rs-info" class="mut"></div><div class="tw"><table id="rs-tb"></table></div></div></section>
-
-<section id="v-te" class="hide">
-<div class="card"><h2>Yangi test yaratish</h2>
-<div id="mode-warn" class="warn hide"></div>
-<label>Test nomi</label><input id="te-title" placeholder="Masalan: Menejment asoslari — 1-nazorat">
-<label>Fayl yuklang (.txt yoki .docx)</label><input type="file" id="te-file" accept=".txt,.docx">
-<label>yoki savollarni shu yerga joylang</label><textarea id="te-text" placeholder="1. Savol matni?&#10;A) Birinchi javob&#10;*B) To‘g‘ri javob&#10;C) Uchinchi&#10;D) To‘rtinchi"></textarea>
-<label>Variantlar soni</label><input type="number" id="te-n" value="4" min="1" max="20">
-<label>Test vaqti (daqiqa; 0 = cheklovsiz)</label><input type="number" id="te-min" value="20" min="0" max="300">
-<button class="btn" id="te-go">Variantlarga ajratib e’lon qilish</button>
-<div id="te-msg" class="mut" style="margin-top:10px"></div></div>
-<div class="card"><h2>Fayl formati</h2><pre>1. Savol matni?
-A) Variant
-*B) To‘g‘ri javob (yulduzcha bilan)
-C) Variant
-D) Variant
-
-2. Keyingi savol?
-A) ...
-B) ...
-Javob: C</pre><p class="mut">To‘g‘ri javob yo‘q yoki «Javob: X» qatori orqali ham belgilanadi. Savollar va javoblar har bir variantda aralashtiriladi.</p>
-<button class="btn alt" id="te-clr">Natijalarni tozalash</button></div>
-</section>
-</div>
-
+<header><div class="wrap"><h1>📝 Onlayn Test Platformasi</h1><p>Kod yoki QR orqali kiring — natijangiz darhol ko‘rinadi</p></div></header>
+<div class="wrap"><div id="app"></div></div>
 <script>
 (function(){
-const $=s=>document.querySelector(s);
-let db=null,isOwner=false,isT=false,test=null,results=[];
-const LS={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const $=s=>document.querySelector(s),app=$('#app');
+const LS={g(k){try{return localStorage.getItem(k)}catch(e){return null}},s(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const gr=p=>p>=86?5:p>=71?4:p>=56?3:2;
-function unlock(){if(isT)return true;if(db)return false;let p=LS.get('tp_pin');if(!p){p=prompt('O‘qituvchi uchun yangi PIN-kod yarating:');if(!p)return false;LS.set('tp_pin',p);}else{const x=prompt('O‘qituvchi PIN-kodi:');if(x!==p){alert('PIN noto‘g‘ri');return false;}}isT=true;$('#t-rs').classList.remove('hide');return true;}
-function tab(n){['st','rs','te'].forEach(k=>{$('#v-'+k).classList.toggle('hide',k!==n);$('#t-'+k).classList.toggle('on',k===n)});if(n==='rs')renderRes();}
-['st','rs','te'].forEach(k=>$('#t-'+k).onclick=()=>{if(k==='te'&&!unlock())return;tab(k)});
+/* Firebase Realtime Database manzili (GitHub Pages uchun). Masalan: https://loyiha-default-rtdb.firebaseio.com */
+const FB_URL='';
+let mode='local',db=null,isT=false,T=null,st={};
+const clr=()=>clearInterval(T);
 
-/* storage */
-async function loadAll(){
- if(db){try{const d=await db.doc('tests/current').get();test=d.exists?JSON.parse(d.data().json):null;const r=await db.collection('results').get();results=r.docs.map(x=>x.data());}catch(e){}}
- else{try{test=JSON.parse(LS.get('tp_test')||'null');results=JSON.parse(LS.get('tp_res')||'[]');}catch(e){}}
- renderStart();renderRes();
-}
-async function saveTest(t){test=t;if(db)await db.doc('tests/current').set({json:JSON.stringify(t)});else LS.set('tp_test',JSON.stringify(t));}
-async function saveRes(r){results.push(r);if(db)await db.collection('results').add(r);else LS.set('tp_res',JSON.stringify(results));}
-async function clearRes(){results=[];if(db){const r=await db.collection('results').get();await Promise.all(r.docs.map(d=>db.doc('results/'+d.id).delete()));}else LS.set('tp_res','[]');}
+/* ---- saqlash (Claude db / Firebase / mahalliy) ---- */
+async function G(p){if(mode==='claude'){const d=await db.doc(p).get();return d.exists?JSON.parse(d.data().j):null}
+ if(mode==='fb'){const j=await(await fetch(FB_URL+'/'+p+'.json')).json();return j&&j.j?JSON.parse(j.j):null}
+ return JSON.parse(LS.g('k_'+p)||'null')}
+async function P(p,o){const j=JSON.stringify(o);if(mode==='claude')await db.doc(p).set({j});
+ else if(mode==='fb')await fetch(FB_URL+'/'+p+'.json',{method:'PUT',body:JSON.stringify({j})});else LS.s('k_'+p,j)}
+async function putP(c,pl){if(mode==='claude')await db.doc('players/'+c+'_'+pl.id).set(Object.assign({code:c},pl));
+ else if(mode==='fb')await fetch(FB_URL+'/players/'+c+'/'+pl.id+'.json',{method:'PUT',body:JSON.stringify(pl)});
+ else{const a=JSON.parse(LS.g('pl_'+c)||'{}');a[pl.id]=pl;LS.s('pl_'+c,JSON.stringify(a))}}
+async function listP(c){if(mode==='claude')return(await db.collection('players').where('code','==',c).get()).docs.map(d=>d.data());
+ if(mode==='fb'){const o=await(await fetch(FB_URL+'/players/'+c+'.json')).json();return Object.values(o||{})}
+ return Object.values(JSON.parse(LS.g('pl_'+c)||'{}'))}
 
-/* parser */
-function parse(txt){
- const qs=[];let cur=null;
- for(let raw of txt.replace(/\r/g,'').split('\n')){
-  const l=raw.trim();if(!l)continue;
-  let m;
-  if((m=l.match(/^(?:javob|answer|to['‘’ʻ]?g['‘’ʻ]?ri)\s*[:\-]\s*([A-Da-d])/i))&&cur){cur.a=m[1].toUpperCase().charCodeAt(0)-65;continue;}
-  if((m=l.match(/^([*+])?\s*([A-Da-d])[\.\)]\s*(.+)$/))&&cur){const i=m[2].toUpperCase().charCodeAt(0)-65;cur.o[i]=m[3];if(m[1])cur.a=i;continue;}
-  if((m=l.match(/^\d+\s*[\.\)]\s*(.+)$/))){cur={q:m[1],o:[],a:-1};qs.push(cur);continue;}
-  if(cur&&!cur.o.length)cur.q+=' '+l;
- }
- return qs.filter(q=>q.o.filter(Boolean).length>=2&&q.a>=0&&q.o[q.a]);
-}
+/* ---- parser va variantlar ---- */
+function parse(txt){const qs=[];let cur=null;
+ for(const raw of txt.replace(/\r/g,'').split('\n')){const l=raw.trim();if(!l)continue;let m;
+  if((m=l.match(/^(?:javob|answer|to['‘’ʻ]?g['‘’ʻ]?ri)\s*[:\-]\s*([A-Da-d])/i))&&cur){cur.a=m[1].toUpperCase().charCodeAt(0)-65;continue}
+  if((m=l.match(/^([*+])?\s*([A-Da-d])[\.\)]\s*(.+)$/))&&cur){const i=m[2].toUpperCase().charCodeAt(0)-65;cur.o[i]=m[3];if(m[1])cur.a=i;continue}
+  if((m=l.match(/^\d+\s*[\.\)]\s*(.+)$/))){cur={q:m[1],o:[],a:-1};qs.push(cur);continue}
+  if(cur&&!cur.o.length)cur.q+=' '+l}
+ return qs.filter(q=>q.o.filter(Boolean).length>=2&&q.a>=0&&q.o[q.a])}
 function shuf(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function makeVariants(qs,n){
- const L='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
- return Array.from({length:n},(_,v)=>({id:v+1,qs:shuf(qs).map(q=>{
-  const idx=shuf(q.o.map((_,i)=>i).filter(i=>q.o[i]));
-  return{q:q.q,o:idx.map(i=>q.o[i]),a:idx.indexOf(q.a)};
- })}));
-}
+function makeVariants(qs,n){return Array.from({length:n},(_,v)=>({id:v+1,qs:shuf(qs).map(q=>{
+ const idx=shuf(q.o.map((_,i)=>i).filter(i=>q.o[i]));return{q:q.q,o:idx.map(i=>q.o[i]),a:idx.indexOf(q.a)}})}))}
+async function readFile(f){if(/\.docx$/i.test(f.name)){const r=await mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()});return r.value}return await f.text()}
 
-/* teacher */
-function teacherSetup(){
- const w=$('#mode-warn');
- if(!db){w.classList.remove('hide');w.textContent='Bu rejimda test faqat shu qurilmada saqlanadi. O‘quvchilar o‘z telefonlarida ochishi uchun sahifaga claude.ai hisobi bilan kirish kerak bo‘ladi.';}
-}
-async function readFile(f){
- if(/\.docx$/i.test(f.name)){const r=await mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()});return r.value;}
- return await f.text();
-}
-$('#te-file').onchange=async e=>{const f=e.target.files[0];if(f){try{$('#te-text').value=await readFile(f);$('#te-msg').textContent='Fayl o‘qildi: '+f.name;}catch(x){$('#te-msg').textContent='Faylni o‘qib bo‘lmadi.';}}};
-$('#te-go').onclick=async()=>{
- const qs=parse($('#te-text').value);const n=Math.max(1,Math.min(20,+$('#te-n').value||1));
- if(!qs.length){$('#te-msg').textContent='Savollar topilmadi. Formatni tekshiring (har bir savolda to‘g‘ri javob belgilangan bo‘lsin).';return;}
- const t={title:$('#te-title').value.trim()||'Test',id:Date.now(),min:Math.max(0,Math.min(300,+$('#te-min').value||0)),variants:makeVariants(qs,n)};
- try{await saveTest(t);await clearRes();$('#te-msg').textContent='✅ '+qs.length+' ta savol, '+n+' ta variant tayyor. O‘quvchilar endi topshirishi mumkin.';renderStart();renderRes();}
- catch(e){$('#te-msg').textContent='Saqlab bo‘lmadi: '+(e.message||e.code||'xato');}
-};
-$('#te-clr').onclick=async()=>{if(confirm('Barcha natijalar o‘chirilsinmi?')){await clearRes();renderRes();}};
+/* ---- bosh sahifa ---- */
+function home(){clr();
+ app.innerHTML='<div class="card c"><h2>Xush kelibsiz!</h2><p class="mut">Rolni tanlang</p><button class="btn big" id="b1">👨‍🎓 Men o‘quvchiman</button>'+
+ (mode==='claude'&&!isT?'':'<button class="btn big alt2" id="b2">👨‍🏫 Men o‘qituvchiman</button>')+'</div>';
+ $('#b1').onclick=sJoin;const b2=$('#b2');if(b2)b2.onclick=()=>{if(unlock())tHome()}}
+function unlock(){if(isT)return true;if(mode==='claude')return false;let p=LS.g('tp_pin');
+ if(!p){p=prompt('O‘qituvchi uchun yangi PIN-kod yarating:');if(!p)return false;LS.s('tp_pin',p)}
+ else{const x=prompt('O‘qituvchi PIN-kodi:');if(x!==p){alert('PIN noto‘g‘ri');return false}}
+ isT=true;return true}
 
-/* student */
-let st={};
-function renderStart(){
- const el=$('#v-st');
- if(!test){el.innerHTML='<div class="card"><h2>Hozircha test yo‘q</h2><p class="mut">O‘qituvchi test e’lon qilgach shu yerda paydo bo‘ladi.</p></div>';return;}
- const done=LS.get('tp_done_'+test.id);
- el.innerHTML='<div class="card"><h2>'+esc(test.title)+'</h2><p class="mut">'+test.variants[0].qs.length+' ta savol • '+test.variants.length+' ta variant'+(test.min?' • ⏱ '+test.min+' daqiqa':'')+'</p>'+
- '<label>Ism va familiyangiz</label><input id="st-name" placeholder="Masalan: Aliyev Vali" value="'+esc(LS.get('tp_name')||'')+'">'+
- (done?'<p class="mut">Siz bu testni topshirib bo‘lgansiz.</p>':'')+
- '<button class="btn" id="st-go">Testni boshlash</button></div>';
- $('#st-go').onclick=()=>{const nm=$('#st-name').value.trim();if(nm.length<3){alert('Ism-familiyangizni kiriting');return;}
-  LS.set('tp_name',nm);const v=test.variants[Math.floor(Math.random()*test.variants.length)];st={name:nm,v,ans:[]};renderQ();};
-}
-function renderQ(){
- const v=st.v;let h='<div class="card"><h2>'+esc(test.title)+' — '+v.id+'-variant</h2><p class="mut">'+esc(st.name)+'</p>'+(test.min?'<div id="tm" class="score" style="font-size:1.6rem;position:sticky;top:env(safe-area-inset-top,0px);background:var(--card);padding:6px 0;z-index:5"></div>':'')+'<div class="bar"><i id="pg" style="width:0"></i></div>';
- v.qs.forEach((q,i)=>{h+='<div class="q"><b>'+(i+1)+'. '+esc(q.q)+'</b>'+q.o.map((o,j)=>'<button class="opt" data-i="'+i+'" data-j="'+j+'"><b style="display:inline;margin-right:6px">'+'ABCDEFGH'[j]+')</b>'+esc(o)+'</button>').join('')+'</div>';});
- h+='<button class="btn" id="st-fin">Yakunlash</button></div>';$('#v-st').innerHTML=h;scrollTo(0,0);
+/* ---- o'qituvchi: test joylash ---- */
+function tHome(){clr();const last=LS.g('tp_last');
+ app.innerHTML='<div class="card"><h2>Yangi test yaratish</h2>'+
+ (mode==='local'?'<div class="warn">Baza ulanmagan: test faqat shu qurilmada ishlaydi. O‘quvchilar telefonidan kirishi uchun Firebase manzilini kodga kiriting (FB_URL).</div>':'')+
+ '<label>Test nomi</label><input id="ti" placeholder="Masalan: Marketing — 1-nazorat">'+
+ '<label>Fayl yuklang (.txt yoki .docx)</label><input type="file" id="fi" accept=".txt,.docx">'+
+ '<label>yoki savollarni shu yerga joylang</label><textarea id="tx" placeholder="1. Savol?&#10;A) Javob&#10;*B) To‘g‘ri javob&#10;C) Javob&#10;D) Javob"></textarea>'+
+ '<label>Variantlar soni</label><input type="number" id="nv" value="4" min="1" max="20">'+
+ '<label>Test vaqti (daqiqa; 0 = cheklovsiz)</label><input type="number" id="mn" value="20" min="0" max="300">'+
+ '<label class="chk"><input type="checkbox" id="ap"> Har bir o‘quvchiga o‘qituvchi qo‘lda ruxsat bersin</label>'+
+ '<button class="btn" id="go">Xona yaratish (kod va QR olish)</button><div id="ms" class="mut" style="margin-top:8px"></div>'+
+ (last?'<button class="btn alt2" id="lr">Oxirgi xonaga qaytish ('+esc(last)+')</button>':'')+'</div>'+
+ '<div class="card"><h2>Fayl formati</h2><pre>1. Savol matni?\nA) Variant\n*B) To‘g‘ri javob (yulduzcha bilan)\nC) Variant\nD) Variant\n\n2. Keyingi savol?\nA) ...\nB) ...\nJavob: C</pre></div><button class="btn alt2" id="hm">← Bosh sahifa</button>';
+ $('#hm').onclick=home;if(last)$('#lr').onclick=()=>tRoom(last);
+ $('#fi').onchange=async e=>{const f=e.target.files[0];if(f){try{$('#tx').value=await readFile(f);$('#ms').textContent='Fayl o‘qildi: '+f.name}catch(x){$('#ms').textContent='Faylni o‘qib bo‘lmadi'}}};
+ $('#go').onclick=async()=>{const qs=parse($('#tx').value),n=Math.max(1,Math.min(20,+$('#nv').value||1)),m=$('#ms');
+  if(!qs.length){m.textContent='Savollar topilmadi. Har bir savolda to‘g‘ri javob belgilangan bo‘lsin.';return}
+  const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c='';for(let i=0;i<6;i++)c+=A[Math.floor(Math.random()*A.length)];
+  try{await P('tests/'+c,{variants:makeVariants(qs,n)});
+   await P('rooms/'+c,{title:$('#ti').value.trim()||'Test',min:Math.max(0,Math.min(300,+$('#mn').value||0)),status:'lobby',approve:$('#ap').checked,allow:{},block:{},n:qs.length});
+   LS.s('tp_last',c);tRoom(c)}catch(e){m.textContent='Saqlab bo‘lmadi: '+(e.message||'xato')}}}
+
+/* ---- o'qituvchi: xona (kod, QR, jonli ishtirokchilar) ---- */
+async function tRoom(c){clr();let r;try{r=await G('rooms/'+c)}catch(e){}
+ if(!r){alert('Xona topilmadi');return tHome()}
+ const link=location.href.split('#')[0]+'#'+c;
+ app.innerHTML='<div class="card c"><div class="mut">Test kodi</div><div class="code">'+c+'</div><div class="qr" id="qr"></div>'+
+ '<p class="mut" style="word-break:break-all">'+esc(link)+'</p><b>'+esc(r.title)+'</b> <span class="mut">• '+r.n+' ta savol • '+(r.min?r.min+' daqiqa':'vaqt cheklanmagan')+(r.approve?' • ruxsat bilan':'')+'</span>'+
+ '<div><button class="btn" id="st1">▶ Testni boshlash</button><button class="btn alt" id="st2">■ Yakunlash</button><button class="btn alt2" id="st3">✔ Hammaga ruxsat</button></div><div id="ss" class="mut" style="margin-top:8px"></div></div>'+
+ '<div class="card"><h2>👥 Ishtirokchilar <span id="cn" class="mut"></span></h2><div class="tw"><table id="pt"></table></div></div>'+
+ '<button class="btn alt2" id="nw">+ Yangi test</button>';
+ try{new QRCode($('#qr'),{text:link,width:190,height:190})}catch(e){}
+ const lab={lobby:'Kutish xonasi: o‘quvchilar kirmoqda',running:'Test davom etmoqda',closed:'Test yakunlangan'};
+ const show=()=>{$('#ss').textContent=lab[r.status]};show();
+ const save=async()=>{await P('rooms/'+c,r);show()};
+ $('#st1').onclick=async()=>{r.status='running';await save()};
+ $('#st2').onclick=async()=>{if(confirm('Testni yakunlaysizmi?')){r.status='closed';await save()}};
+ $('#st3').onclick=async()=>{(await listP(c)).forEach(p=>{if(!r.block[p.id])r.allow[p.id]=1});r.approve=false;await save();poll()};
+ $('#nw').onclick=tHome;
+ const poll=async()=>{try{const ps=(await listP(c)).sort((a,b)=>a.joined-b.joined);
+  const done=ps.filter(p=>p.status==='done').length;$('#cn').textContent='— '+ps.length+' ta, topshirgan: '+done;
+  $('#pt').innerHTML='<tr><th>#</th><th>Ism</th><th>Holat</th><th>Ball</th><th>Foiz</th><th>Baho</th><th>Ruxsat</th></tr>'+(ps.length?ps.map((p,i)=>{
+   const bl=r.block[p.id],al=!r.approve||r.allow[p.id];
+   const h=bl?'⛔ Chetlatilgan':p.status==='done'?'✅ Topshirdi':p.status==='working'?'✍️ Ishlayapti':al?'⏳ Kutmoqda':'🔒 Ruxsat kutmoqda';
+   return'<tr><td>'+(i+1)+'</td><td>'+esc(p.name)+'</td><td>'+h+'</td><td>'+(p.status==='done'?p.score+'/'+p.total:'—')+'</td><td>'+(p.status==='done'?p.p+'%':'—')+'</td><td><b>'+(p.status==='done'?p.grade:'—')+'</b></td><td>'+
+   (bl?'<button class="btn sm ok" data-a="un" data-i="'+p.id+'">Qaytarish</button>':(al?'':'<button class="btn sm ok" data-a="al" data-i="'+p.id+'">Ruxsat</button>')+(p.status==='done'?'':'<button class="btn sm bad" data-a="bl" data-i="'+p.id+'">Blok</button>'))+'</td></tr>'}).join(''):'<tr><td colspan="7" class="mut">Hozircha hech kim kirmadi. Kodni yoki QR’ni o‘quvchilarga bering.</td></tr>');
+  document.querySelectorAll('#pt button').forEach(b=>b.onclick=async()=>{const i=b.dataset.i,a=b.dataset.a;
+   if(a==='al')r.allow[i]=1;if(a==='bl'){r.block[i]=1;delete r.allow[i]}if(a==='un')delete r.block[i];await save();poll()})}catch(e){}};
+ poll();T=setInterval(poll,3000)}
+
+/* ---- o'quvchi ---- */
+function sJoin(){clr();const c0=(location.hash||'').slice(1).toUpperCase();
+ app.innerHTML='<div class="card"><h2>Testga kirish</h2><label>Test kodi</label><input id="sc" maxlength="8" value="'+esc(c0)+'" style="text-transform:uppercase;letter-spacing:5px;font-size:1.4rem;text-align:center">'+
+ '<label>Ism va familiyangiz</label><input id="sn" value="'+esc(LS.g('tp_name')||'')+'" placeholder="Masalan: Aliyev Vali"><button class="btn" id="sg">Kirish</button><div id="sm" class="mut" style="margin-top:8px"></div></div><button class="btn alt2" id="hm">← Bosh sahifa</button>';
+ $('#hm').onclick=home;
+ $('#sg').onclick=async()=>{const c=$('#sc').value.trim().toUpperCase(),nm=$('#sn').value.trim(),m=t=>$('#sm').textContent=t;
+  if(!c)return m('Test kodini kiriting');if(nm.length<3)return m('Ism-familiyangizni kiriting');
+  if(LS.g('done_'+c))return m('Siz bu testni topshirib bo‘lgansiz');
+  try{const r=await G('rooms/'+c);if(!r)return m('Bunday kod topilmadi');if(r.status==='closed')return m('Bu test yakunlangan');
+   LS.s('tp_name',nm);let id=LS.g('pid_'+c);if(!id){id=Math.random().toString(36).slice(2,9);LS.s('pid_'+c,id)}
+   st={code:c,name:nm,id,joined:Date.now()};await putP(c,{id,name:nm,status:'waiting',joined:st.joined});sWait()}catch(e){m('Ulanishda xato: '+(e.message||''))}}}
+function msg(h,t){clr();app.innerHTML='<div class="card c"><h2>'+h+'</h2><p class="mut">'+t+'</p></div>'}
+function sWait(){clr();app.innerHTML='<div class="card c"><h2>Siz ro‘yxatdasiz ✅</h2><p><b>'+esc(st.name)+'</b></p><p class="mut" id="wt">O‘qituvchi testni boshlashini kuting…</p><div style="font-size:2rem">⏳</div></div>';
+ const chk=async()=>{try{const r=await G('rooms/'+st.code);if(!r)return;
+  if(r.block&&r.block[st.id]){return msg('⛔ Chetlatildingiz','O‘qituvchi sizga ruxsat bermadi.')}
+  if(r.status==='closed')return msg('Test yakunlandi','Kirish yopilgan.');
+  if(r.status==='running'){if(r.approve&&!r.allow[st.id]){$('#wt').textContent='O‘qituvchi sizga ruxsat berishini kuting…';return}clr();startTest(r)}}catch(e){}};
+ chk();T=setInterval(chk,2500)}
+async function startTest(r){let t;try{t=await G('tests/'+st.code)}catch(e){}
+ if(!t)return msg('Xato','Test yuklanmadi. Qayta urinib ko‘ring.');
+ st.room=r;st.v=t.variants[Math.floor(Math.random()*t.variants.length)];st.ans=[];
+ await putP(st.code,{id:st.id,name:st.name,status:'working',joined:st.joined,variant:st.v.id});
+ const v=st.v;let h='<div class="card"><h2>'+esc(r.title)+' — '+v.id+'-variant</h2><p class="mut">'+esc(st.name)+'</p>'+(r.min?'<div id="tm" class="score" style="font-size:1.6rem;position:sticky;top:env(safe-area-inset-top,0px);background:var(--card);padding:6px 0;z-index:5"></div>':'')+'<div class="bar"><i id="pg" style="width:0"></i></div>';
+ v.qs.forEach((q,i)=>{h+='<div class="q"><b>'+(i+1)+'. '+esc(q.q)+'</b>'+q.o.map((o,j)=>'<button class="opt" data-i="'+i+'" data-j="'+j+'"><b style="display:inline;margin-right:6px">'+'ABCDEFGH'[j]+')</b>'+esc(o)+'</button>').join('')+'</div>'});
+ h+='<button class="btn" id="fn">Yakunlash</button></div>';app.innerHTML=h;scrollTo(0,0);
  document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,j=+b.dataset.j;st.ans[i]=j;
   document.querySelectorAll('.opt[data-i="'+i+'"]').forEach(x=>x.classList.toggle('sel',+x.dataset.j===j));
-  $('#pg').style.width=(st.ans.filter(x=>x!==undefined).length/v.qs.length*100)+'%';});
- $('#st-fin').onclick=()=>finish();startTimer();
-}
-function startTimer(){if(!test.min)return;const end=Date.now()+test.min*60000;const tick=()=>{const s=Math.max(0,Math.round((end-Date.now())/1000));const el=$('#tm');if(el){el.textContent='⏱ '+String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');el.style.color=s<60?'var(--bad)':'';}if(s<=0){clearInterval(st.tid);alert('Vaqt tugadi! Natijangiz yuborilmoqda.');finish(true);}};tick();st.tid=setInterval(tick,1000);}
-async function finish(force){clearInterval(st.tid);
- const v=st.v,n=v.qs.length,un=n-st.ans.filter(x=>x!==undefined).length;
- if(un&&!force&&!confirm(un+' ta savolga javob berilmadi. Baribir yakunlaysizmi?'))return;
- const sc=v.qs.reduce((s,q,i)=>s+(st.ans[i]===q.a?1:0),0);
- let saved=true;try{await saveRes({name:st.name,variant:v.id,score:sc,total:n,ts:Date.now(),tid:test.id});LS.set('tp_done_'+test.id,'1');}catch(e){saved=false;}
- const p=Math.round(sc/n*100);
- let h='<div class="card"><div class="score">'+sc+' / '+n+'</div><div class="score" style="font-size:1.5rem;color:'+(gr(p)>=4?'var(--ok)':gr(p)==3?'var(--gold)':'var(--bad)')+'">Baho: '+gr(p)+' ('+p+'%)</div><p style="text-align:center;margin:0" class="mut">'+p+'% — '+(p>=86?'A’lo! 🌟':p>=71?'Yaxshi 👍':p>=56?'Qoniqarli':'Ko‘proq tayyorlaning')+'</p><div class="bar"><i style="width:'+p+'%"></i></div>'+(saved?'':'<div class="warn">Natija jadvalga saqlanmadi (internet yoki ruxsat muammosi).</div>')+'</div><div class="card"><h2>Javoblar tahlili</h2>';
- v.qs.forEach((q,i)=>{h+='<div class="q"><b>'+(i+1)+'. '+esc(q.q)+'</b>'+q.o.map((o,j)=>'<div class="opt '+(j===q.a?'ok':st.ans[i]===j?'no':'')+'">'+'ABCDEFGH'[j]+') '+esc(o)+(j===q.a?' ✓':st.ans[i]===j?' ✗':'')+'</div>').join('')+'</div>';});
- h+='</div>';$('#v-st').innerHTML=h;scrollTo(0,0);
- renderRes();
-}
+  $('#pg').style.width=(st.ans.filter(x=>x!==undefined).length/v.qs.length*100)+'%'});
+ $('#fn').onclick=()=>finish();
+ const end=Date.now()+(r.min||0)*60000;let k=0;
+ const tick=async()=>{if(r.min){const s=Math.max(0,Math.round((end-Date.now())/1000)),el=$('#tm');
+   if(el){el.textContent='⏱ '+String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');el.style.color=s<60?'var(--bad)':''}
+   if(s<=0){clr();alert('Vaqt tugadi! Natijangiz yuborilmoqda.');return finish(true)}}
+  if(++k%5===0){try{const x=await G('rooms/'+st.code);if(x&&x.block&&x.block[st.id]){clr();msg('⛔ Chetlatildingiz','O‘qituvchi testni to‘xtatdi.')}}catch(e){}}};
+ tick();T=setInterval(tick,1000)}
+async function finish(force){const v=st.v,n=v.qs.length,un=n-st.ans.filter(x=>x!==undefined).length;
+ if(un&&!force&&!confirm(un+' ta savolga javob berilmadi. Baribir yakunlaysizmi?'))return;clr();
+ const sc=v.qs.reduce((s,q,i)=>s+(st.ans[i]===q.a?1:0),0),p=Math.round(sc/n*100),g=gr(p);let saved=true;
+ try{await putP(st.code,{id:st.id,name:st.name,status:'done',joined:st.joined,variant:v.id,score:sc,total:n,p,grade:g});LS.s('done_'+st.code,'1')}catch(e){saved=false}
+ let h='<div class="card"><div class="score">'+sc+' / '+n+'</div><div class="score" style="font-size:1.5rem;color:'+(g>=4?'var(--ok)':g==3?'var(--gold)':'var(--bad)')+'">Baho: '+g+' ('+p+'%)</div><div class="bar"><i style="width:'+p+'%"></i></div>'+(saved?'':'<div class="warn">Natija o‘qituvchiga yuborilmadi (internet muammosi).</div>')+'</div><div class="card"><h2>Javoblar tahlili</h2>';
+ v.qs.forEach((q,i)=>{h+='<div class="q"><b>'+(i+1)+'. '+esc(q.q)+'</b>'+q.o.map((o,j)=>'<div class="opt '+(j===q.a?'ok':st.ans[i]===j?'no':'')+'">'+'ABCDEFGH'[j]+') '+esc(o)+(j===q.a?' ✓':st.ans[i]===j?' ✗':'')+'</div>').join('')+'</div>'});
+ app.innerHTML=h+'</div>';scrollTo(0,0)}
 
-/* results */
-function renderRes(){
- const rs=results.filter(r=>!test||r.tid===test.id).sort((a,b)=>b.score-a.score||a.ts-b.ts);
- $('#rs-info').textContent=test?test.title+' — topshirganlar: '+rs.length:'Test yo‘q';
- $('#rs-tb').innerHTML='<tr><th>#</th><th>Ism</th><th>Variant</th><th>Ball</th><th>Foiz</th><th>Baho</th></tr>'+(rs.length?rs.map((r,i)=>'<tr><td>'+(i<3?['🥇','🥈','🥉'][i]:i+1)+'</td><td>'+esc(r.name)+'</td><td>'+r.variant+'</td><td>'+r.score+'/'+r.total+'</td><td>'+Math.round(r.score/r.total*100)+'%</td><td><b>'+gr(Math.round(r.score/r.total*100))+'</b></td></tr>').join(''):'<tr><td colspan="6" class="mut">Hozircha natija yo‘q</td></tr>');
-}
-
-/* boot */
-renderStart();renderRes();teacherSetup();
-(async()=>{
- try{
-  if(window.claude&&claude.use){const d=await claude.use('db');if(d){db=d;try{const u=await claude.use('user');isOwner=u?await u.isOwner():false;}catch(e){}}}
- }catch(e){}
- teacherSetup();
- if(db){isT=isOwner;if(!isOwner)$('#t-te').classList.add('hide');else $('#t-rs').classList.remove('hide');}
- await loadAll();
-})();
+/* ---- ishga tushirish ---- */
+(async()=>{try{if(window.claude&&claude.use){const d=await claude.use('db');if(d){db=d;mode='claude';try{const u=await claude.use('user');isT=u?await u.isOwner():false}catch(e){}}}}catch(e){}
+ if(mode!=='claude')mode=FB_URL?'fb':'local';
+ if(location.hash.length>1)sJoin();else home()})();
 })();
 </script>
 </body>
