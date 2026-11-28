@@ -7,9 +7,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <link rel="stylesheet" href="style.css">
+<style>
+.lnk{background:none;border:0;color:var(--pri);font:inherit;font-weight:700;cursor:pointer;padding:0;text-decoration:underline}
+.dq{padding:8px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+.okb{background:color-mix(in srgb,var(--ok) 14%,transparent);border:1px solid var(--ok);border-radius:12px;padding:10px 12px;font-size:.9rem}
+.okt{color:var(--ok);font-weight:600;font-size:.88rem}
+details{margin-top:8px;max-height:300px;overflow:auto}summary{cursor:pointer;color:var(--pri);font-weight:700;padding:6px 0}
+.ov{position:fixed;inset:0;background:rgba(10,12,30,.82);z-index:200;display:grid;place-items:center;text-align:center;color:#fff;padding:20px}
+</style>
 </head>
 <body>
-<header><div class="wrap hw"><div class="logo">✦</div><div><h1>Onlayn Test</h1><p>Kod yoki QR orqali kiring — natija darhol ko‘rinadi</p></div><button class="thb" id="th" title="Yorug‘/qorong‘i">🌓</button></div></header>
+<header><div class="wrap hw"><div class="logo">✦</div><div><h1>Onlayn Test</h1><p>Kod yoki QR orqali kiring — natija darhol körinadi</p></div><button class="thb" id="th" title="Yoruğ/qoronği">🌓</button></div></header>
 <div class="wrap"><div id="app"></div></div>
 <footer>© Milliy test platformasi</footer>
 <script src="app.js"></script>
